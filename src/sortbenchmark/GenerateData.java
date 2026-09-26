@@ -3,13 +3,20 @@ package sortbenchmark;
 import java.util.Random;
 
 public class GenerateData {
-    public static int[] genRandArray(int n) {
-        int [] data = new int[n];
-        Random rand = new Random();
+    private int[] originData;
 
-        for (int i=0;i<n;i++) { // 0...n-1
-            data[i]=rand.nextInt(n);
+    public GenerateData(int n) { //construct
+        this.originData = new int[n];
+        Random rand = new Random();
+        for (int i=0;i<n;i++) {
+            this.originData[i] = rand.nextInt(n); // 0...n-1
         }
-        return data;
+    }
+    //get
+    public int[] getCopy() {
+        return this.originData.clone();
+    }
+    public int[] getOriginal() {
+        return this.originData;
     }
 }
