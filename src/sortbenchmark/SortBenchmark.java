@@ -9,15 +9,17 @@ public class SortBenchmark {
      */
     public static void main(String[] args) {
         int n = 10;
-        int[] testData = GenerateData.genRandArray(n);
-        int[] Bubble = testData.clone();
-        int[] Selection = testData.clone();
-        Algorithm.bubbleSort(Bubble);
-        Algorithm.Selection(Selection);
 
-        System.out.println("Origin Arr    :"+Arrays.toString(testData));
-        System.out.println("Bubble Arr    :"+Arrays.toString(Bubble));
-        System.out.println("Selection Arr :"+Arrays.toString(Selection));
+        GenerateData dataGen = new GenerateData(n);
+        int[] bubbleData = dataGen.getCopy();
+        int[] selectionData = dataGen.getCopy();
+
+        Algorithm.bubbleSort(bubbleData);
+        Algorithm.Selection(selectionData);
+
+        System.out.println("Origin Arr   : "+Arrays.toString(dataGen.getOriginal()));
+        System.out.println("Bubble Arr   : "+Arrays.toString(bubbleData));
+        System.out.println("Selection Arr: "+Arrays.toString(selectionData));
     }
     
 }
