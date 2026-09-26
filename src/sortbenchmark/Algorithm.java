@@ -14,7 +14,7 @@ public class Algorithm {
         }
     }
     //Selection
-    public static void Selection(int[] A){
+    public static void selectionSort(int[] A){
         int n=A.length;
         for (int i=0;i<=n-2;i++){
             int min=i;//index of min (head)
@@ -25,6 +25,19 @@ public class Algorithm {
             int temp = A[min];
             A[min] = A[i];
             A[i] = temp;
+        }
+    }
+    //Insertion
+    public static void insertionSort(int[] A){
+        int n=A.length;
+        for (int i=1;i<=n-1;i++){
+            int key = A[i];//temp of Num for compare with j
+            int j=i-1;
+            while (j>=0 && A[j]>key) {
+                A[j+1]=A[j];
+                j--;
+            }
+            A[j+1] = key;
         }
     }
 }
