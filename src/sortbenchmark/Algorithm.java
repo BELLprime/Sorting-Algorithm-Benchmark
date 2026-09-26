@@ -40,4 +40,36 @@ public class Algorithm {
             A[j+1] = key;
         }
     }
+    //----------------Quick sort------------------
+    public static void quickSort(int[] A) {
+        if (A != null && A.length > 1) {
+            quickSort(A, 0, A.length - 1);
+        }
+    }
+    public static void quickSort(int[] A,int l,int r){
+        if (l<r){
+            int s = partition(A,l,r);
+            quickSort(A, l, s - 1); // เรียงซีกซ้าย
+            quickSort(A, s + 1, r);
+        }
+    }
+    private static int partition(int A[],int l,int r){ //HoarePartition
+        int pivot=A[l];
+        int i=l; int j=r+1 ;
+        do {
+            do {
+                i++;
+            } while (i<r && A[i]<pivot);  //until (A[i] >= pivot);
+            do {
+                j--;
+            } while (A[j] > pivot); //until (A[j] <= pivot);
+            //temp swap
+            int temp=A[i]; A[i]=A[j]; A[j]=temp;
+        } while (i < j); //until while(i>=j);
+        //recover swap
+        int temp=A[i]; A[i]=A[j]; A[j]=temp;
+        //swap l and j
+        temp=A[l]; A[l]=A[j]; A[j]=temp;
+        return j;//index spilt postion
+    }
 }
