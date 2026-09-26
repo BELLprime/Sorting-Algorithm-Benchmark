@@ -1,26 +1,46 @@
-# Compiled class file
+# ==========================================
+# Java Compilation & Build Artifacts
+# ==========================================
 *.class
-
-# Log file
-*.log
-
-# Package Files
 *.jar
 *.war
 *.ear
+*.nar
 *.zip
-
-# NetBeans specific
-nbproject/private/
+*.tar.gz
+*.rar
 build/
 nbbuild/
 dist/
 nbdist/
+
+# ==========================================
+# NetBeans IDE (Keep configs, ignore private)
+# ==========================================
+nbproject/private/
 .nb-gradle/
 
-# IDE & OS
+# ==========================================
+# IntelliJ IDEA, VS Code, Eclipse
+# ==========================================
 .idea/
 *.iml
+*.iws
+*.ipr
+out/
 .vscode/
+.settings/
+.project
+.classpath
+
+# ==========================================
+# Operating System & Temporary Files
+# ==========================================
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.log
+*.tmp
+*.bak
