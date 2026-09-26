@@ -1,31 +1,44 @@
 package sortbenchmark;
 
-import java.util.Arrays;
-
 public class SortBenchmark {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        int n = 10;
-
-        GenerateData dataGen = new GenerateData(n);
-        int[] bubbleData = dataGen.getCopy();
-        int[] selectionData = dataGen.getCopy();
-        int[] insertionData = dataGen.getCopy();
-        int[] quickData = dataGen.getCopy();
-
-        Algorithm.bubbleSort(bubbleData);
-        Algorithm.selectionSort(selectionData);
-        Algorithm.insertionSort(insertionData);
-        Algorithm.quickSort(quickData);
-
-        System.out.println("Origin Arr        : "+Arrays.toString(dataGen.getOriginal()));
-        System.out.println("Bubble sort Arr   : "+Arrays.toString(bubbleData));
-        System.out.println("Selection sort Arr: "+Arrays.toString(selectionData));
-        System.out.println("Insertion sort Arr: "+Arrays.toString(insertionData));
-        System.out.println("Quick sort Arr    : "+Arrays.toString(quickData));
-    }
+    private static final int[] SIZES = {500, 1_000, 10_000, 50_000, 100_000};
     
+    public static void main(String[] args) {
+        TimeTracker timer = new TimeTracker();
+
+        System.out.println("========================================================================================");
+        System.out.printf("| %-10s | %-15s | %-16s | %-16s | %-14s |\n", "n", "Bubble (ms)", "Selection (ms)", "Insertion (ms)", "Quick (ms)");
+        System.out.println("----------------------------------------------------------------------------------------");
+
+        for (int n : SIZES) {
+            GenerateData dataGen = new GenerateData(n);
+
+            //Bubble Sort
+            int[] bubbleData = dataGen.getCopy();
+            timer.start();
+            Algorithm.bubbleSort(bubbleData);
+            double timeBubble = timer.stop();
+
+            //Selection Sort
+            int[] selectionData = dataGen.getCopy();
+            timer.start();
+            Algorithm.selectionSort(selectionData);
+            double timeSelection = timer.stop();
+
+            //Insertion Sort
+            int[] insertionData = dataGen.getCopy();
+            timer.start();
+            Algorithm.insertionSort(insertionData);
+            double timeInsertion = timer.stop();
+
+            //Quick Sort
+            int[] quickData = dataGen.getCopy();
+            timer.start();
+            Algorithm.quickSort(quickData);
+            double timeQuick = timer.stop();
+
+            System.out.printf("| %-10d | %-15.3f | %-16.3f | %-16.3f | %-14.3f |\n", n, timeBubble, timeSelection, timeInsertion, timeQuick);
+        }
+        System.out.println("========================================================================================");
+    }
 }
