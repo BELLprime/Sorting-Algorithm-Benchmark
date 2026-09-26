@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorting Algorithm Benchmark - SpaceX x PewDiePie Edition</title>
+  <!-- Google Fonts: Montserrat Bold/Black -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&display=swap" rel="stylesheet">
+  <!-- External SpaceX HUD Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Dynamic Starfield Canvas Background -->
+<canvas id="starfield"></canvas>
+
+<!-- Top Telemetry Mission Bar -->
+<div class="top-telemetry-bar">
+  <div>
+    <span class="beacon-dot"></span>
+    <span>SYS.STATUS: NOMINAL // MISSION TELEMETRY ACTIVE</span>
+  </div>
+  <div>
+    <span>ORBIT: LEO // PAYLOAD: 100,000 DISCRETE INTEGERS</span>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Technical Corner Brackets -->
+  <div class="corner-bracket corner-top-left"></div>
+  <div class="corner-bracket corner-top-right"></div>
+  <div class="corner-bracket corner-bottom-left"></div>
+  <div class="corner-bracket corner-bottom-right"></div>
+
+  <header>
+    <!-- PewDiePie Logo with Aerospace Glow -->
+    <div>
+      <img src="pewdiepie_brofist.png" alt="PewDiePie Legend of the Brofist" class="header-logo" onerror="this.src='https://www.pngitem.com/pimgs/m/118-1187398_pewdiepie-legend-of-the-brofist-pewdiepie-png-transparent.png'">
+    </div>
+    <div class="mission-subhead">MISSION CONTROL BENCHMARK // ENGSE216</div>
+    <h1>Sorting Algorithm Analysis</h1>
+    <p>Empirical Performance & Asymptotic Growth Telemetry for 4 Sorting Algorithms</p>
+  </header>
+
+  <!-- SpaceX HUD Telemetry Metric Cards -->
+  <div class="telemetry-grid">
+    <div class="telemetry-card">
+      <div class="telemetry-label">
+        <span>MAX SPEEDUP</span>
+        <span>DELTA</span>
+      </div>
+      <div class="telemetry-value" id="hudSpeedup">2,232.5x</div>
+      <div class="telemetry-sub">Quick vs Bubble @ 100k</div>
+    </div>
+
+    <div class="telemetry-card">
+      <div class="telemetry-label">
+        <span>FASTEST TIME</span>
+        <span>QUICK SORT</span>
+      </div>
+      <div class="telemetry-value" id="hudFastest">0.147 ms</div>
+      <div class="telemetry-sub">Latency Record @ n=1,000</div>
+    </div>
+
+    <div class="telemetry-card">
+      <div class="telemetry-label">
+        <span>MAX DURATION</span>
+        <span>BUBBLE SORT</span>
+      </div>
+      <div class="telemetry-value" id="hudSlowest">13.97 s</div>
+      <div class="telemetry-sub">Latency Penalty @ n=100,000</div>
+    </div>
+
+    <div class="telemetry-card">
+      <div class="telemetry-label">
+        <span>EFFICIENCY CLASS</span>
+        <span>ASYMPTOTIC</span>
+      </div>
+      <div class="telemetry-value" style="color: #00ff88;">O(n log n)</div>
+      <div class="telemetry-sub">Optimal Divide & Conquer</div>
+    </div>
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls">
+    <div class="scale-toggle">
+      <label for="scaleSelect">Time Scale (Y-Axis):</label>
+      <select id="scaleSelect" onchange="updateScale()">
+        <option value="linear">Linear Scale (Shows Parabolic Growth)</option>
+        <option value="logarithmic">Logarithmic Scale (Wide Dynamic Range)</option>
+      </select>
+    </div>
+    <div class="btn-group">
+      <button onclick="downloadChart()">
+        Download Chart (PNG)
+      </button>
+      <button class="btn-secondary" onclick="resetToDefaults()">
+        Reset to Default
+      </button>
+    </div>
+  </div>
+
+  <!-- Chart Area with Corner Brackets -->
+  <div class="chart-container">
+    <div class="corner-bracket corner-top-left" style="border-color: rgba(255,255,255,0.3);"></div>
+    <div class="corner-bracket corner-top-right" style="border-color: rgba(255,255,255,0.3);"></div>
+    <div class="corner-bracket corner-bottom-left" style="border-color: rgba(255,255,255,0.3);"></div>
+    <div class="corner-bracket corner-bottom-right" style="border-color: rgba(255,255,255,0.3);"></div>
+    <canvas id="benchmarkChart"></canvas>
+  </div>
+
+  <!-- Data Table -->
+  <div class="table-section">
+    <h3>Telemetry Data Matrix (Editable - Graph Updates Real-Time):</h3>
+    <div class="table-wrapper">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>Input Size (n)</th>
+            <th><span class="badge" style="background:#f9013f; color:#f9013f;"></span>Bubble Sort (ms)</th>
+            <th><span class="badge" style="background:#ff8800; color:#ff8800;"></span>Selection Sort (ms)</th>
+            <th><span class="badge" style="background:#00d2ff; color:#00d2ff;"></span>Insertion Sort (ms)</th>
+            <th><span class="badge" style="background:#00ff88; color:#00ff88;"></span>Quick Sort (ms)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic Data Rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Paste Box -->
+  <div class="paste-box">
+    <strong>Import Java Console Output (Auto Parse):</strong>
+    <p>Paste the raw table text copied directly from your Java console output below, then click "Import Data":</p>
+    <textarea id="pasteInput" placeholder="| 500        | 2.451           | 1.141            | 1.231            | 0.251          |&#10;| 1000       | 0.741           | 1.536            | 1.132            | 0.147          | ..."></textarea>
+    <div class="paste-actions">
+      <button onclick="parseAndLoadData()">Import Data</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initial default dataset based on actual Java benchmark run
+  let benchmarkData = [
+    { n: 500,     bubble: 2.451,     selection: 1.141,    insertion: 1.231,   quick: 0.251 },
+    { n: 1000,    bubble: 0.741,     selection: 1.536,    insertion: 1.132,   quick: 0.147 },
+    { n: 10000,   bubble: 106.781,   selection: 40.879,   insertion: 19.980,  quick: 1.241 },
+    { n: 50000,   bubble: 3276.934,  selection: 578.589,  insertion: 389.524, quick: 3.074 },
+    { n: 100000,  bubble: 13969.114, selection: 4338.790, insertion: 495.174, quick: 6.257 }
+  ];
+
+  let chartInstance = null;
+
+  function initTable() {
+    const tbody = document.querySelector("#dataTable tbody");
+    tbody.innerHTML = "";
+    benchmarkData.forEach((row, idx) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${row.n.toLocaleString()}</strong></td>
+        <td><input type="number" step="0.001" value="${row.bubble}" onchange="updateRow(${idx}, 'bubble', this.value)"></td>
+        <td><input type="number" step="0.001" value="${row.selection}" onchange="updateRow(${idx}, 'selection', this.value)"></td>
+        <td><input type="number" step="0.001" value="${row.insertion}" onchange="updateRow(${idx}, 'insertion', this.value)"></td>
+        <td><input type="number" step="0.001" value="${row.quick}" onchange="updateRow(${idx}, 'quick', this.value)"></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    updateHudStats();
+  }
+
+  function updateRow(idx, field, value) {
+    benchmarkData[idx][field] = parseFloat(value) || 0;
+    renderChart();
+    updateHudStats();
+  }
+
+  function updateHudStats() {
+    const lastRow = benchmarkData[benchmarkData.length - 1];
+    if (lastRow && lastRow.quick > 0) {
+      const speedup = (lastRow.bubble / lastRow.quick).toFixed(1);
+      document.getElementById('hudSpeedup').innerText = `${Number(speedup).toLocaleString()}x`;
+      document.getElementById('hudSlowest').innerText = (lastRow.bubble >= 1000) ? 
+        (lastRow.bubble / 1000).toFixed(2) + ' s' : lastRow.bubble.toFixed(2) + ' ms';
+    }
+
+    const minQuick = Math.min(...benchmarkData.map(d => d.quick));
+    document.getElementById('hudFastest').innerText = `${minQuick.toFixed(3)} ms`;
+  }
+
+  function renderChart() {
+    const ctx = document.getElementById('benchmarkChart').getContext('2d');
+    const scaleType = document.getElementById('scaleSelect').value;
+
+    const labels = benchmarkData.map(d => d.n >= 1000 ? (d.n / 1000) + 'k' : d.n);
+    
+    // High-Contrast Neon Mission Palettes
+    const datasets = [
+      {
+        label: 'Bubble Sort (O(n²))',
+        data: benchmarkData.map(d => d.bubble),
+        borderColor: '#f9013f',
+        backgroundColor: '#f9013f',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#f9013f',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        tension: 0.35
+      },
+      {
+        label: 'Selection Sort (O(n²))',
+        data: benchmarkData.map(d => d.selection),
+        borderColor: '#ff8800',
+        backgroundColor: '#ff8800',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#ff8800',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        tension: 0.35
+      },
+      {
+        label: 'Insertion Sort (O(n²))',
+        data: benchmarkData.map(d => d.insertion),
+        borderColor: '#00d2ff',
+        backgroundColor: '#00d2ff',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#00d2ff',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        tension: 0.35
+      },
+      {
+        label: 'Quick Sort (O(n log n))',
+        data: benchmarkData.map(d => d.quick),
+        borderColor: '#00ff88',
+        backgroundColor: '#00ff88',
+        borderWidth: 3,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#00ff88',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 9,
+        tension: 0.35
+      }
+    ];
+
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'COMPARISON OF SORTING ALGORITHMS EFFICIENCY',
+            color: '#f9013f',
+            font: { size: 15, weight: '900', family: 'Montserrat' },
+            padding: { top: 5, bottom: 20 }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(8, 8, 14, 0.95)',
+            titleColor: '#f9013f',
+            bodyColor: '#ffffff',
+            borderColor: 'rgba(249, 1, 63, 0.5)',
+            borderWidth: 1,
+            padding: 12,
+            boxPadding: 6,
+            usePointStyle: true,
+            callbacks: {
+              label: function(context) {
+                let val = context.parsed.y;
+                let s = (val / 1000).toFixed(3);
+                return ` ${context.dataset.label}: ${val.toFixed(3)} ms (${s} s)`;
+              }
+            }
+          },
+          legend: {
+            position: 'top',
+            labels: {
+              boxWidth: 12,
+              usePointStyle: true,
+              color: '#cbd5e1',
+              font: { size: 12.5, weight: '700', family: 'Montserrat' },
+              padding: 15
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'INPUT SIZE (n)',
+              color: '#8892b0',
+              font: { size: 12, weight: 'bold', family: 'Montserrat' }
+            },
+            grid: { 
+              color: 'rgba(255, 255, 255, 0.05)' 
+            },
+            ticks: {
+              color: '#cbd5e0',
+              font: { family: 'Consolas', weight: '600' }
+            }
+          },
+          y: {
+            type: scaleType,
+            title: {
+              display: true,
+              text: 'EXECUTION TIME (MILLISECONDS)',
+              color: '#8892b0',
+              font: { size: 12, weight: 'bold', family: 'Montserrat' }
+            },
+            grid: { 
+              color: 'rgba(255, 255, 255, 0.06)' 
+            },
+            ticks: {
+              color: '#cbd5e0',
+              font: { family: 'Consolas', weight: '600' },
+              callback: function(value) {
+                return value.toLocaleString() + ' ms';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function updateScale() {
+    renderChart();
+  }
+
+  function downloadChart() {
+    const canvas = document.getElementById('benchmarkChart');
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+
+    // Fill dark space background
+    tempCtx.fillStyle = '#050508';
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    tempCtx.drawImage(canvas, 0, 0);
+
+    const link = document.createElement('a');
+    link.download = 'sorting_benchmark_spacex_pewdiepie.png';
+    link.href = tempCanvas.toDataURL('image/png', 1.0);
+    link.click();
+  }
+
+  function resetToDefaults() {
+    benchmarkData = [
+      { n: 500,     bubble: 2.451,     selection: 1.141,    insertion: 1.231,   quick: 0.251 },
+      { n: 1000,    bubble: 0.741,     selection: 1.536,    insertion: 1.132,   quick: 0.147 },
+      { n: 10000,   bubble: 106.781,   selection: 40.879,   insertion: 19.980,  quick: 1.241 },
+      { n: 50000,   bubble: 3276.934,  selection: 578.589,  insertion: 389.524, quick: 3.074 },
+      { n: 100000,  bubble: 13969.114, selection: 4338.790, insertion: 495.174, quick: 6.257 }
+    ];
+    initTable();
+    renderChart();
+  }
+
+  function parseAndLoadData() {
+    const text = document.getElementById('pasteInput').value;
+    const lines = text.trim().split('\n');
+    const parsed = [];
+
+    lines.forEach(line => {
+      if (line.includes('|')) {
+        const parts = line.split('|').map(s => s.trim()).filter(s => s.length > 0);
+        if (parts.length >= 5) {
+          const n = parseInt(parts[0].replace(/,/g, ''));
+          const b = parseFloat(parts[1]);
+          const s = parseFloat(parts[2]);
+          const i = parseFloat(parts[3]);
+          const q = parseFloat(parts[4]);
+          if (!isNaN(n) && !isNaN(b) && !isNaN(s) && !isNaN(i) && !isNaN(q)) {
+            parsed.push({ n: n, bubble: b, selection: s, insertion: i, quick: q });
+          }
+        }
+      }
+    });
+
+    if (parsed.length > 0) {
+      benchmarkData = parsed;
+      initTable();
+      renderChart();
+      alert(`Successfully imported ${parsed.length} records! The chart has been updated.`);
+    } else {
+      alert('No matching table data found. Please check your copied format and try again.');
+    }
+  }
+
+  // ==========================================
+  // SpaceX Interactive Starfield Warp Animation
+  // ==========================================
+  const starCanvas = document.getElementById('starfield');
+  const starCtx = starCanvas.getContext('2d');
+  let stars = [];
+  const numStars = 130;
+  let mouseX = 0;
+  let mouseY = 0;
+
+  function resizeCanvas() {
+    starCanvas.width = window.innerWidth;
+    starCanvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  for (let i = 0; i < numStars; i++) {
+    stars.push({
+      x: Math.random() * starCanvas.width,
+      y: Math.random() * starCanvas.height,
+      radius: Math.random() * 1.5 + 0.3,
+      alpha: Math.random() * 0.7 + 0.2,
+      dx: (Math.random() - 0.5) * 0.35,
+      dy: (Math.random() - 0.5) * 0.35,
+      color: Math.random() > 0.8 ? '#f9013f' : (Math.random() > 0.9 ? '#00f0ff' : '#ffffff')
+    });
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
+    mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
+  });
+
+  function animateStars() {
+    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+
+    for (let star of stars) {
+      star.x += star.dx + mouseX;
+      star.y += star.dy + mouseY;
+
+      if (star.x < 0) star.x = starCanvas.width;
+      if (star.x > starCanvas.width) star.x = 0;
+      if (star.y < 0) star.y = starCanvas.height;
+      if (star.y > starCanvas.height) star.y = 0;
+
+      starCtx.beginPath();
+      starCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      starCtx.fillStyle = star.color;
+      starCtx.globalAlpha = star.alpha;
+      starCtx.fill();
+    }
+
+    requestAnimationFrame(animateStars);
+  }
+
+  window.onload = function() {
+    initTable();
+    renderChart();
+    animateStars();
+  };
+</script>
+
+</body>
+</html>
